@@ -6,6 +6,11 @@ import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.LayoutManager;
 import java.awt.FlowLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+
+import java.util.ArrayList;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -26,12 +31,18 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
   private static int DEFAULT_COLOUR_FRAME_HEIGHT = 450;
 
   private JFrame mainFrame;
+  private JMenuBar jmb;
+  private Canvas canvas;
   private JToolBar jtb;
   private JLabel selectShapeLabel;
-  private JMenuBar jmb;
   private JButton colourButton, clearButton, undoButton, redoButton, moveButton,
   lineButton, rectangleButton, parallelogramButton, triangleButton, crossButton,
   ellipseButton, murrayPolygonButton;
+
+  private int startX = -1;
+  private int startY = -1;
+  private int finishX = -1;
+  private int finishY = -1;
 
   public DrawDelegate(DrawModel model) {
         this.model = model;
@@ -52,6 +63,11 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
         jtb = new JToolBar();
         addToolbar();
         mainFrame.getContentPane().add(jtb, BorderLayout.NORTH);
+
+        // Create canvas
+        canvas = new Canvas();
+        mainFrame.getContentPane().add(canvas, BorderLayout.CENTER);
+        addActionListenerForCanvas(this);
 
         // Add the Delegate as a listener
         addActionListenerForButtons(this);
@@ -80,11 +96,57 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
     }
 
     /**
+     * Adds the action listner for the canvas.
+     * @param al  Action listner
+     */
+    public void addActionListenerForCanvas(ActionListener al) {
+
+      canvas.addMouseListener(new MouseAdapter() {
+        public void mouseReleased(MouseEvent e) {
+
+          finishX = e.getX();
+          finishY = e.getY();
+
+          // draw shape
+          model.drawShape(startX, startY, finishX, finishY);
+          canvas.repaint();
+
+          startX = -1;
+          startY = -1;
+        }
+      });
+
+      canvas.addMouseMotionListener(new MouseMotionAdapter() {
+        public void mouseDragged(MouseEvent e) {
+
+          if (startX == -1 && startY == -1) {
+            startX = e.getX();
+            startY = e.getY();
+          } else {
+            // TODO will have to undo in the queue
+          }
+
+          finishX = e.getX();
+          finishY = e.getY();
+
+          //draw shape
+          // model.drawShape(startX, startY, finishX, finishY);
+          canvas.repaint();
+
+        }
+      });
+    }
+
+
+    /**
      * Re-draws canvas. Called by model whenever a value updates.
      * @param event  Event
      */
     public void propertyChange(PropertyChangeEvent event) {
 
+      System.out.println("In draw delegae: " + ((ArrayList<Shape>) event.getNewValue()).toString());
+      canvas.setShapeList((ArrayList<Shape>) event.getNewValue());
+      canvas.repaint();
     }
 
     /**
