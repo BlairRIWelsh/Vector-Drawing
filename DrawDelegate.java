@@ -104,15 +104,17 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
       canvas.addMouseListener(new MouseAdapter() {
         public void mouseReleased(MouseEvent e) {
 
-          finishX = e.getX();
-          finishY = e.getY();
+          if (startX != -1 && startY != -1) {
+            finishX = e.getX();
+            finishY = e.getY();
 
-          // draw shape
-          model.drawShape(startX, startY, finishX, finishY);
-          canvas.repaint();
+            // draw shape
+            model.drawShape(startX, startY, finishX, finishY);
+            canvas.repaint();
 
-          startX = -1;
-          startY = -1;
+            startX = -1;
+            startY = -1;
+          }
         }
       });
 
@@ -122,8 +124,6 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
           if (startX == -1 && startY == -1) {
             startX = e.getX();
             startY = e.getY();
-          } else {
-            // TODO will have to undo in the queue
           }
 
           finishX = e.getX();
@@ -132,6 +132,7 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
           //draw shape
           // model.drawShape(startX, startY, finishX, finishY);
           canvas.repaint();
+          //model.undo ?
 
         }
       });
@@ -144,7 +145,7 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
      */
     public void propertyChange(PropertyChangeEvent event) {
 
-      System.out.println("In draw delegae: " + ((ArrayList<Shape>) event.getNewValue()).toString());
+      //System.out.println("In draw delegae: " + ((ArrayList<Shape>) event.getNewValue()).toString());
       canvas.setShapeList((ArrayList<Shape>) event.getNewValue());
       canvas.repaint();
     }
@@ -157,11 +158,11 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
       if (e.getSource() == colourButton) {
         changeColour();
       } else if (e.getSource() == clearButton) {
-
+        model.clearShapeList();
       } else if (e.getSource() == undoButton) {
-
+        model.undoShapeList();
       } else if (e.getSource() == redoButton) {
-
+        model.redoShapeList();
       } else if (e.getSource() == moveButton) {
 
       } else if (e.getSource() == lineButton) {

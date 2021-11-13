@@ -21,7 +21,7 @@ public class Canvas extends JPanel {
 		//
 		Graphics2D g2d = (Graphics2D) g;
 
-		System.out.println("In paint: " + shapeList.toString());
+		//System.out.println("In paint: " + shapeList.toString());
 
 		for (Shape shape : shapeList) {
 

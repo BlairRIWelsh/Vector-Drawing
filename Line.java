@@ -7,7 +7,7 @@ class Line extends Shape {
   }
 
   public void draw(Graphics g) {
-    System.out.println("printing line at " + startX + "," + startY + " to " + finishX + "," + finishY);
+    //System.out.println("printing line at " + startX + "," + startY + " to " + finishX + "," + finishY);
 
     g.drawLine(startX, startY, finishX, finishY);
   }

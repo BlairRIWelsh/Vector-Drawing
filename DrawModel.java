@@ -9,6 +9,10 @@ public class DrawModel {
   private String shape = "Line"; // Currently selected shape to draw
   private Color colour = Color.BLACK; // Currently selected colour
   ArrayList<Shape> shapeList = new ArrayList<Shape>();
+  ArrayList<Shape> undoList = new ArrayList<Shape>();
+
+  ArrayList<Shape> clearList = new ArrayList<Shape>();
+  private int undosTillClear = -1;
 
   public DrawModel() {
       this.notifier = new PropertyChangeSupport(this);
@@ -27,9 +31,6 @@ public class DrawModel {
    */
   private void update(ArrayList<Shape> tempShapeList) {
 
-      System.out.println("in draw model: " + shapeList.toString());
-
-      //AbstractAction.firePropertyChange(String propertyName, Object oldValue, Object newValue)
       notifier.firePropertyChange("shapeList", shapeList, tempShapeList);
       shapeList = tempShapeList;  // reset for next change
 
@@ -68,6 +69,69 @@ public class DrawModel {
 
     System.out.println("Drawn " + shape + " from " + startX + "," + startY + " to " + finishX + "," + finishY);
     update(tempShapeList);
+
+    if (undosTillClear != -1) {
+      undosTillClear++;
+    }
+  }
+
+  public void clearShapeList() {
+
+    if (!shapeList.isEmpty()) {
+
+      clearList.addAll(shapeList); // add all shapes to undo list
+      undosTillClear = 0;
+
+      ArrayList<Shape> tempShapeList = new ArrayList<Shape>();
+      update(tempShapeList);
+
+      System.out.println("Cleared shape list");
+    }
+  }
+
+  public void undoShapeList() {
+
+    if (undosTillClear == 0) {// if we are undoing a clear operation
+
+      shapeList.addAll(clearList); // add all cleared shapes to the shapelist
+      clearList.clear(); // empty clear list
+      undosTillClear = -1;
+      return;
+    }
+
+    if (!shapeList.isEmpty()) {
+
+      undoList.add(shapeList.get(shapeList.size() - 1));
+
+      ArrayList<Shape> tempShapeList = (ArrayList) shapeList.clone();
+      tempShapeList.remove(shapeList.size() - 1);
+
+      update(tempShapeList);
+      System.out.println("Undo shape list");
+
+      if (undosTillClear > 0) {
+        undosTillClear--;
+      }
+
+    }
+  }
+
+  public void redoShapeList() {
+
+    if (!undoList.isEmpty()) {
+      ArrayList<Shape> tempShapeList = (ArrayList) shapeList.clone();
+      tempShapeList.add(undoList.get(undoList.size() - 1));
+
+      undoList.remove(undoList.size() - 1);
+
+      update(tempShapeList);
+      System.out.println("Redo shape list");
+
+      if (undosTillClear > 0) {
+        undosTillClear++;
+      }
+
+    }
   }
 
 }
