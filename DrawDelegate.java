@@ -144,10 +144,9 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
      * @param event  Event
      */
     public void propertyChange(PropertyChangeEvent event) {
-
-      //System.out.println("In draw delegae: " + ((ArrayList<Shape>) event.getNewValue()).toString());
       canvas.setShapeList((ArrayList<Shape>) event.getNewValue());
       canvas.repaint();
+
     }
 
     /**

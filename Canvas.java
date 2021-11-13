@@ -25,7 +25,9 @@ public class Canvas extends JPanel {
 
 		for (Shape shape : shapeList) {
 
-			if (shape instanceof Line){
+			if (shape instanceof ShapeLine){
+				shape.draw(g);
+			} else if (shape instanceof ShapeRectangle){
 				shape.draw(g);
 			}
 

@@ -9,11 +9,12 @@ public abstract class Shape {
   protected int finishX;
   protected int finishY;
 
-  public Shape(int startX, int startY, int finishX, int finishY) {
+  public Shape(int startX, int startY, int finishX, int finishY, Color colour) {
     this.startX = startX;
     this.startY = startY;
     this.finishX = finishX;
     this.finishY = finishY;
+    this.colour = colour;
   }
 
 	public abstract void draw(Graphics g);

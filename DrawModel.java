@@ -51,10 +51,9 @@ public class DrawModel {
     ArrayList<Shape> tempShapeList = (ArrayList) shapeList.clone();
 
     if (shape.equals("Line")) {
-      tempShapeList.add(new Line(startX, startY, finishX, finishY));
-
+      tempShapeList.add(new ShapeLine(startX, startY, finishX, finishY, colour));
     } else if (shape.equals("Rectangle")) {
-
+      tempShapeList.add(new ShapeRectangle(startX, startY, finishX, finishY, colour));
     } else if (shape.equals("Parallelogram")) {
 
     } else if (shape.equals("Triangle")) {
