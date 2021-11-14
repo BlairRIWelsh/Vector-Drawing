@@ -55,13 +55,13 @@ public class DrawModel {
     } else if (shape.equals("Rectangle")) {
       tempShapeList.add(new ShapeRectangle(startX, startY, finishX, finishY, colour));
     } else if (shape.equals("Parallelogram")) {
-
+      tempShapeList.add(new ShapeParalellogram(startX, startY, finishX, finishY, colour));
     } else if (shape.equals("Triangle")) {
-
+        tempShapeList.add(new ShapeTriangle(startX, startY, finishX, finishY, colour));
     } else if (shape.equals("Cross")) {
-
+        tempShapeList.add(new ShapeCross(startX, startY, finishX, finishY, colour));
     } else if (shape.equals("Ellipse")) {
-
+      tempShapeList.add(new ShapeEllipse(startX, startY, finishX, finishY, colour));
     } else if (shape.equals("Murray Polygon")) {
 
     }

@@ -29,6 +29,14 @@ public class Canvas extends JPanel {
 				shape.draw(g);
 			} else if (shape instanceof ShapeRectangle){
 				shape.draw(g);
+			} else if (shape instanceof ShapeEllipse){
+				shape.draw(g);
+			} else if (shape instanceof ShapeTriangle){
+				shape.draw(g);
+			} else if (shape instanceof ShapeParalellogram){
+				shape.draw(g);
+			} else if (shape instanceof ShapeCross){
+				shape.draw(g);
 			}
 
 		}

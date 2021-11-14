@@ -1,10 +1,11 @@
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Color;
-import java.awt.Rectangle;
+import java.awt.geom.Ellipse2D;
 
-class ShapeRectangle extends Shape {
+class ShapeEllipse extends Shape {
 
-  public ShapeRectangle(int startX, int startY, int finishX, int finishY, Color colour) {
+  public ShapeEllipse(int startX, int startY, int finishX, int finishY, Color colour) {
     super(startX, startY, finishX, finishY, colour);
 
   }
@@ -13,8 +14,10 @@ class ShapeRectangle extends Shape {
 
     g.setColor(colour);
 
+    Graphics2D g2d = (Graphics2D) g;
+
     int width = finishX - startX;
-    int height = finishY - startY;
+    int height = finishY-startY;
     int X = startX;
     int Y = startY;
 
@@ -27,7 +30,7 @@ class ShapeRectangle extends Shape {
       height = height * -1;
     }
 
-    g.drawRect(X, Y, width, height);
+    g2d.draw(new Ellipse2D.Double(X, Y, width, height));
 
   }
 

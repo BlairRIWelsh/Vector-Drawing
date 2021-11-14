@@ -9,6 +9,7 @@ import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import javax.swing.border.LineBorder;
 
 import java.util.ArrayList;
 
@@ -34,7 +35,8 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
   private JMenuBar jmb;
   private Canvas canvas;
   private JToolBar jtb;
-  private JLabel selectShapeLabel;
+  private JComboBox shapeComboBox;
+  private JLabel selectShapeLabel, colourLabel, shapeLabel;
   private JButton colourButton, clearButton, undoButton, redoButton, moveButton,
   lineButton, rectangleButton, parallelogramButton, triangleButton, crossButton,
   ellipseButton, murrayPolygonButton;
@@ -67,10 +69,10 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
         // Create canvas
         canvas = new Canvas();
         mainFrame.getContentPane().add(canvas, BorderLayout.CENTER);
-        addActionListenerForCanvas(this);
 
         // Add the Delegate as a listener
         addActionListenerForButtons(this);
+        addActionListenerForCanvas(this);
         model.addListener(this);
 
     }
@@ -85,6 +87,8 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
         undoButton.addActionListener(al);
         redoButton.addActionListener(al);
         moveButton.addActionListener(al);
+        shapeComboBox.addActionListener(al);
+
         lineButton.addActionListener(al);
         rectangleButton.addActionListener(al);
         parallelogramButton.addActionListener(al);
@@ -129,10 +133,12 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
           finishX = e.getX();
           finishY = e.getY();
 
-          //draw shape
+          // // Draw shape dynamically as it is dragged
           // model.drawShape(startX, startY, finishX, finishY);
+          // canvas.repaint();
+          // model.undoShapeList();
+
           canvas.repaint();
-          //model.undo ?
 
         }
       });
@@ -164,6 +170,8 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
         model.redoShapeList();
       } else if (e.getSource() == moveButton) {
 
+      } else if (e.getSource() == shapeComboBox) {
+        changeShape((String)shapeComboBox.getSelectedItem());
       } else if (e.getSource() == lineButton) {
         changeShape("Line");
       } else if (e.getSource() == rectangleButton) {
@@ -212,6 +220,7 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
             colorLabel.setForeground(colour);
             selectShapeLabel.setForeground(colour);
             selectShapeLabel.setBorder(BorderFactory.createLineBorder(colour));
+            colourButton.setBackground(colour);
 
             // Change model
             model.setColour(colour);
@@ -244,17 +253,35 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
 
       jtb.setFloatable(false);
 
-      colourButton = new JButton("Colour");
-      clearButton = new JButton("Clear");
+      colourLabel = new JLabel("Colour: ");
+      colourButton = new JButton("    ");
+      colourButton.setBackground(Color.BLACK);
+      colourButton.setForeground(Color.BLACK);
+      colourButton.setBorder(new LineBorder(Color.BLACK));
+      colourButton.setOpaque(true);
+
+      clearButton = new JButton(" Clear");
       undoButton = new JButton("Undo");
       redoButton = new JButton("Redo");
       moveButton = new JButton("Move");
+
+      shapeLabel = new JLabel(" Shape:");
+      shapeComboBox = new JComboBox();
+      shapeComboBox.addItem("Line");
+      shapeComboBox.addItem("Rectangle");
+      shapeComboBox.addItem("Ellipse");
+      shapeComboBox.addItem("Cross");
+      shapeComboBox.addItem("Triangle");
+      shapeComboBox.addItem("Parallelogram");
+      shapeComboBox.addItem("Murray Polygon");
+
+
       lineButton = new JButton("Line");
       rectangleButton = new JButton("Rectangle");
-      parallelogramButton = new JButton("Parallelogram");
-      triangleButton = new JButton("Triangle");
-      crossButton = new JButton("Cross");
       ellipseButton = new JButton("Ellipse");
+      crossButton = new JButton("Cross");
+      triangleButton = new JButton("Triangle");
+      parallelogramButton = new JButton("Parallelogram");
       murrayPolygonButton = new JButton("Murray Polygon");
 
       selectShapeLabel = new JLabel("Line",SwingConstants.CENTER);
@@ -262,17 +289,24 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
       selectShapeLabel.setPreferredSize(new Dimension(250, 10));
 
       jtb.add(selectShapeLabel);
-      jtb.add(colourButton);
+
       jtb.add(clearButton);
       jtb.add(undoButton);
       jtb.add(redoButton);
       jtb.add(moveButton);
+
+      jtb.add(colourLabel);
+      jtb.add(colourButton);
+
+      jtb.add(shapeLabel);
+      jtb.add(shapeComboBox);
+
       jtb.add(lineButton);
       jtb.add(rectangleButton);
-      jtb.add(parallelogramButton);
-      jtb.add(triangleButton);
-      jtb.add(crossButton);
       jtb.add(ellipseButton);
+      jtb.add(crossButton);
+      jtb.add(triangleButton);
+      jtb.add(parallelogramButton);
       jtb.add(murrayPolygonButton);
 
     }
