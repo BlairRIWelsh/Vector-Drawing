@@ -76,8 +76,8 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
         mainFrame.getContentPane().add(canvas, BorderLayout.CENTER);
 
         // Add the Delegate as a listener
-        addActionListenerForToolbar(this);
         addActionListenerForCanvas(this);
+        addActionListenerForToolbar(this);
         model.addListener(this);
 
     }
@@ -178,7 +178,10 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
       } else if (e.getSource() == colourButton) {
         pickColour();
       } else if (e.getSource() == shapeComboBox) {
+
+        shapeComboBox.removeItem("Please select...");
         changeShape((String)shapeComboBox.getSelectedItem());
+
       } else if (e.getSource() == lineButton) {
         changeShape("Line");
       } else if (e.getSource() == rectangleButton) {
@@ -295,6 +298,7 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
 
       shapeLabel = new JLabel(" Shape:");
       shapeComboBox = new JComboBox();
+      shapeComboBox.addItem("Please select...");
       shapeComboBox.addItem("Line");
       shapeComboBox.addItem("Rectangle");
       shapeComboBox.addItem("Ellipse");

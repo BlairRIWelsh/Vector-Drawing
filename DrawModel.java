@@ -8,7 +8,7 @@ public class DrawModel {
   private PropertyChangeSupport notifier;  // tracks and notifies listeners
   private String shape = "Line"; // Currently selected shape to draw
   private Color colour = Color.BLACK; // Currently selected colour
-  private float strokeSize = 5;
+  private float strokeSize = 3;
   private boolean fillToggle = false;
   ArrayList<Shape> shapeList = new ArrayList<Shape>();
   ArrayList<Shape> undoList = new ArrayList<Shape>();
