@@ -10,6 +10,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import javax.swing.border.LineBorder;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import java.util.ArrayList;
 
@@ -36,10 +38,13 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
   private Canvas canvas;
   private JToolBar jtb;
   private JComboBox shapeComboBox;
-  private JLabel selectShapeLabel, colourLabel, shapeLabel;
+  private JCheckBox fillBoolean;
+  private JLabel selectShapeLabel, colourLabel, shapeLabel, fillLabel;
   private JButton colourButton, clearButton, undoButton, redoButton, moveButton,
   lineButton, rectangleButton, parallelogramButton, triangleButton, crossButton,
   ellipseButton, murrayPolygonButton;
+
+  Color selectedColour;
 
   private int startX = -1;
   private int startY = -1;
@@ -71,7 +76,7 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
         mainFrame.getContentPane().add(canvas, BorderLayout.CENTER);
 
         // Add the Delegate as a listener
-        addActionListenerForButtons(this);
+        addActionListenerForToolbar(this);
         addActionListenerForCanvas(this);
         model.addListener(this);
 
@@ -81,12 +86,14 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
      * Adds the action listner to all buttons in the toolbar.
      * @param al  Action listner
      */
-    public void addActionListenerForButtons(ActionListener al) {
-        colourButton.addActionListener(al);
+    public void addActionListenerForToolbar(ActionListener al) {
+
         clearButton.addActionListener(al);
         undoButton.addActionListener(al);
         redoButton.addActionListener(al);
         moveButton.addActionListener(al);
+        colourButton.addActionListener(al);
+        // fillBoolean.addActionListener(al);
         shapeComboBox.addActionListener(al);
 
         lineButton.addActionListener(al);
@@ -160,9 +167,7 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
      * @param e  Event
      */
     public void actionPerformed(ActionEvent e) {
-      if (e.getSource() == colourButton) {
-        changeColour();
-      } else if (e.getSource() == clearButton) {
+      if (e.getSource() == clearButton) {
         model.clearShapeList();
       } else if (e.getSource() == undoButton) {
         model.undoShapeList();
@@ -170,6 +175,8 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
         model.redoShapeList();
       } else if (e.getSource() == moveButton) {
 
+      } else if (e.getSource() == colourButton) {
+        pickColour();
       } else if (e.getSource() == shapeComboBox) {
         changeShape((String)shapeComboBox.getSelectedItem());
       } else if (e.getSource() == lineButton) {
@@ -195,7 +202,7 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
      * colour chooser to allow the user to pick a colour. Output label is then
      * changed to reflect this.
      */
-    private void changeColour() {
+    private void pickColour() {
 
       // Create new window
       JFrame colourFrame = new JFrame("Colour Chooser");
@@ -218,11 +225,11 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
 
             // Change output label to reflect new colour
             colorLabel.setForeground(colour);
+
             selectShapeLabel.setForeground(colour);
             selectShapeLabel.setBorder(BorderFactory.createLineBorder(colour));
-            colourButton.setBackground(colour);
 
-            // Change model
+            colourButton.setBackground(colour);
             model.setColour(colour);
 
          }
@@ -253,17 +260,38 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
 
       jtb.setFloatable(false);
 
-      colourLabel = new JLabel("Colour: ");
+      selectShapeLabel = new JLabel("Line",SwingConstants.CENTER);
+      selectShapeLabel.setBorder(BorderFactory.createLineBorder(Color.black));
+      selectShapeLabel.setPreferredSize(new Dimension(250, 10));
+      jtb.add(selectShapeLabel);
+
+      clearButton = new JButton("Clear");
+      undoButton = new JButton("Undo");
+      redoButton = new JButton("Redo");
+      moveButton = new JButton("Move");
+      jtb.add(clearButton);
+      jtb.add(undoButton);
+      jtb.add(redoButton);
+      jtb.add(moveButton);
+
+      colourLabel = new JLabel(" Colour: ");
       colourButton = new JButton("    ");
       colourButton.setBackground(Color.BLACK);
       colourButton.setForeground(Color.BLACK);
       colourButton.setBorder(new LineBorder(Color.BLACK));
       colourButton.setOpaque(true);
+      jtb.add(colourLabel);
+      jtb.add(colourButton);
 
-      clearButton = new JButton(" Clear");
-      undoButton = new JButton("Undo");
-      redoButton = new JButton("Redo");
-      moveButton = new JButton("Move");
+      fillLabel = new JLabel(" Fill:");
+      jtb.add(fillLabel);
+      fillBoolean = new JCheckBox();
+      fillBoolean.addItemListener(new ItemListener() {
+         public void itemStateChanged(ItemEvent e) {
+            model.switchFillToggle();
+         }
+      });
+      jtb.add(fillBoolean);
 
       shapeLabel = new JLabel(" Shape:");
       shapeComboBox = new JComboBox();
@@ -274,7 +302,8 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
       shapeComboBox.addItem("Triangle");
       shapeComboBox.addItem("Parallelogram");
       shapeComboBox.addItem("Murray Polygon");
-
+      jtb.add(shapeLabel);
+      jtb.add(shapeComboBox);
 
       lineButton = new JButton("Line");
       rectangleButton = new JButton("Rectangle");
@@ -283,24 +312,6 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
       triangleButton = new JButton("Triangle");
       parallelogramButton = new JButton("Parallelogram");
       murrayPolygonButton = new JButton("Murray Polygon");
-
-      selectShapeLabel = new JLabel("Line",SwingConstants.CENTER);
-      selectShapeLabel.setBorder(BorderFactory.createLineBorder(Color.black));
-      selectShapeLabel.setPreferredSize(new Dimension(250, 10));
-
-      jtb.add(selectShapeLabel);
-
-      jtb.add(clearButton);
-      jtb.add(undoButton);
-      jtb.add(redoButton);
-      jtb.add(moveButton);
-
-      jtb.add(colourLabel);
-      jtb.add(colourButton);
-
-      jtb.add(shapeLabel);
-      jtb.add(shapeComboBox);
-
       jtb.add(lineButton);
       jtb.add(rectangleButton);
       jtb.add(ellipseButton);

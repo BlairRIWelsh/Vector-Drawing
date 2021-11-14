@@ -1,18 +1,24 @@
 import java.awt.Graphics;
 import java.awt.Color;
 import java.lang.Math.*;
+import java.awt.BasicStroke;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
 
 class ShapeCross extends Shape {
 
   private static int CROSS_THICKNESS_SCALER = 5; // width of the cross
 
-  public ShapeCross(int startX, int startY, int finishX, int finishY, Color colour) {
-    super(startX, startY, finishX, finishY, colour);
+  public ShapeCross(int startX, int startY, int finishX, int finishY, Color colour, boolean fillToggle, float strokeSize) {
+    super(startX, startY, finishX, finishY, colour, fillToggle, strokeSize);
 
   }
 
   public void draw(Graphics g) {
-    g.setColor(colour);
+
+    Graphics2D g2d = (Graphics2D) g;
+    g2d.setPaint(colour);
+    g2d.setStroke(new BasicStroke(strokeSize));
 
     // Get starting and finishing points as well as height and width
     int x1 = startX;
@@ -82,12 +88,19 @@ class ShapeCross extends Shape {
     int innerWCoordX = x1 + (width/2 - q);
     int innerWCoordY = y1 + (height/2);
 
-    g.drawPolygon(
+    Polygon polygon = new Polygon(
       new int[] {
         tlCoordOneX, tlCoordTwoX, innerWCoordX, blCoordOneX, blCoordTwoX, innerSCoordX, brCoordTwoX, brCoordOneX, innerECoordX, trCoordTwoX, trCoordOneX, innerNCoordX},
       new int[] {
         tlCoordOneY, tlCoordTwoY, innerWCoordY, blCoordOneY, blCoordTwoY, innerSCoordY, brCoordTwoY, brCoordOneY, innerECoordY, trCoordTwoY, trCoordOneY, innerNCoordY}
-      , 12);
+      , 12
+    );
+
+    if (fillToggle == true) { //change to fill
+      g2d.fill(polygon);
+    } else {
+      g2d.draw(polygon);
+    }
 
   }
 

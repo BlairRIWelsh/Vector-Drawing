@@ -8,6 +8,8 @@ public class DrawModel {
   private PropertyChangeSupport notifier;  // tracks and notifies listeners
   private String shape = "Line"; // Currently selected shape to draw
   private Color colour = Color.BLACK; // Currently selected colour
+  private float strokeSize = 5;
+  private boolean fillToggle = false;
   ArrayList<Shape> shapeList = new ArrayList<Shape>();
   ArrayList<Shape> undoList = new ArrayList<Shape>();
 
@@ -30,7 +32,6 @@ public class DrawModel {
    * Broadcast most recent change to all listeners.
    */
   private void update(ArrayList<Shape> tempShapeList) {
-
       notifier.firePropertyChange("shapeList", shapeList, tempShapeList);
       shapeList = tempShapeList;  // reset for next change
 
@@ -46,22 +47,28 @@ public class DrawModel {
     this.colour = colour;
   }
 
+  public void switchFillToggle() {
+    fillToggle = !fillToggle;
+    System.out.println("Fill toggled is " + fillToggle);
+
+  }
+
   public void drawShape(int startX, int startY, int finishX, int finishY) {
 
     ArrayList<Shape> tempShapeList = (ArrayList) shapeList.clone();
 
     if (shape.equals("Line")) {
-      tempShapeList.add(new ShapeLine(startX, startY, finishX, finishY, colour));
+      tempShapeList.add(new ShapeLine(startX, startY, finishX, finishY, colour, fillToggle, strokeSize));
     } else if (shape.equals("Rectangle")) {
-      tempShapeList.add(new ShapeRectangle(startX, startY, finishX, finishY, colour));
+      tempShapeList.add(new ShapeRectangle(startX, startY, finishX, finishY, colour, fillToggle, strokeSize));
     } else if (shape.equals("Parallelogram")) {
-      tempShapeList.add(new ShapeParalellogram(startX, startY, finishX, finishY, colour));
+      tempShapeList.add(new ShapeParalellogram(startX, startY, finishX, finishY, colour, fillToggle, strokeSize));
     } else if (shape.equals("Triangle")) {
-        tempShapeList.add(new ShapeTriangle(startX, startY, finishX, finishY, colour));
+        tempShapeList.add(new ShapeTriangle(startX, startY, finishX, finishY, colour, fillToggle, strokeSize));
     } else if (shape.equals("Cross")) {
-        tempShapeList.add(new ShapeCross(startX, startY, finishX, finishY, colour));
+        tempShapeList.add(new ShapeCross(startX, startY, finishX, finishY, colour, fillToggle, strokeSize));
     } else if (shape.equals("Ellipse")) {
-      tempShapeList.add(new ShapeEllipse(startX, startY, finishX, finishY, colour));
+      tempShapeList.add(new ShapeEllipse(startX, startY, finishX, finishY, colour, fillToggle, strokeSize));
     } else if (shape.equals("Murray Polygon")) {
 
     }
