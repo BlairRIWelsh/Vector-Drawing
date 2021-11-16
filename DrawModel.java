@@ -135,10 +135,16 @@ public class DrawModel {
 
   }
 
+  public void printShapeList() {
+    System.out.println("Shape list: " + shapeList.toString());
+  }
+
   /**
    * Undos the last shape added to shapeList.
    */
   public void undoShapeList() {
+
+    // System.out.println("Before Shape list: " + shapeList.toString());
 
     if (undosTillClear == 0) {      // if we are undoing a clear operation
       shapeList.addAll(clearList);  // add all cleared shapes to the shapelist
@@ -162,6 +168,7 @@ public class DrawModel {
       }
 
       // System.out.println("Undo shape list");
+      // System.out.println("After Shape list: " + shapeList.toString());
     }
 
   }
