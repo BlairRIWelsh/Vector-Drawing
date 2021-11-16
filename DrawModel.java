@@ -71,6 +71,12 @@ public class DrawModel {
 
   }
 
+  public void setStrokeSize(float strokeSize) {
+    System.out.println("Stroke size set to " + strokeSize);
+    this.strokeSize = strokeSize;
+
+  }
+
   /**
    * Creates a new shape and adds it to the shape list.
    * @param startX   starting X coordinate of shape

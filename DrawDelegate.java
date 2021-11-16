@@ -13,7 +13,7 @@ import javax.swing.border.LineBorder;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.Graphics;
-
+import java.lang.Double;
 import java.util.ArrayList;
 
 import java.beans.PropertyChangeEvent;
@@ -37,9 +37,10 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
   private static int DEFAULT__COLOUR_FRAME_WIDTH = 500; // Width of colour picker frame
   private static int DEFAULT_COLOUR_FRAME_HEIGHT = 450; // Height of colour picker frame
 
-  private String colourBreak = "                                         ";
-  private String fillBreak = "     ";
-  private String shapeBreak = "                       ";
+  private String strokeBreak = "                          ";
+  private String colourBreak = "  ";
+  private String fillBreak = "  ";
+  private String shapeBreak = "              ";
 
   // Swing components
   private JFrame mainFrame;
@@ -48,7 +49,8 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
   private JToolBar jtb;
   private JComboBox shapeComboBox;
   private JCheckBox fillBoolean;
-  private JLabel colourLabel, shapeLabel, fillLabel;
+  private JLabel colourLabel, shapeLabel, fillLabel, strokeLabel;
+  private JSpinner strokeSize;
   private JButton colourButton, clearButton, undoButton, redoButton;
   private JButton lineButton, rectangleButton, parallelogramButton, triangleButton, crossButton,
   ellipseButton, murrayPolygonButton;
@@ -106,8 +108,8 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
       clearButton.addActionListener(al);
       undoButton.addActionListener(al);
       redoButton.addActionListener(al);
-      // moveButton.addActionListener(al);
       colourButton.addActionListener(al);
+      // strokeSize.addActionListener(al);
       shapeComboBox.addActionListener(al);
 
       lineButton.addActionListener(al);
@@ -198,6 +200,8 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
     } else if (e.getSource() == shapeComboBox) {
       shapeComboBox.removeItem("Please select...");
       changeShape((String)shapeComboBox.getSelectedItem());
+    } else if (e.getSource() == strokeSize) {
+      model.setStrokeSize((float)strokeSize.getValue());
     }
     // else if (e.getSource() == lineButton) {
     //   changeShape("Line");
@@ -281,6 +285,12 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
     jtb.add(undoButton);
     jtb.add(redoButton);
 
+    shapeLabel = new JLabel(strokeBreak + " Stroke: ");
+    jtb.add(shapeLabel);
+    SpinnerModel model = new SpinnerNumberModel(3, 0.5, 100, 0.5); // Initial value, min, max, step
+    strokeSize = new JSpinner(model);
+    jtb.add(strokeSize);
+
     // Colour label and button
     colourLabel = new JLabel(colourBreak + "Colour: ");
     colourButton = new JButton("    ");
@@ -295,12 +305,14 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
     fillLabel = new JLabel(fillBreak + "Fill:");
     jtb.add(fillLabel);
     fillBoolean = new JCheckBox();
-    fillBoolean.addItemListener(new ItemListener() {
-       public void itemStateChanged(ItemEvent e) {
-          model.switchFillToggle(); // Switch toggle when checked or uncheked
-       }
-    });
+    // fillBoolean.addItemListener(new ItemListener() {
+    //    public void itemStateChanged(ItemEvent e) {
+    //       model.switchFillToggle(); // Switch toggle when checked or uncheked
+    //    }
+    // });
     jtb.add(fillBoolean);
+
+    addActionListenerForSpinner();
 
     // Choose shape combo box
     shapeLabel = new JLabel(shapeBreak + "Shape:");
@@ -341,6 +353,20 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
     jtb.add(parallelogramButton);
     jtb.add(murrayPolygonButton);
 
+  }
+
+  private void addActionListenerForSpinner() {
+    fillBoolean.addItemListener(new ItemListener() {
+       public void itemStateChanged(ItemEvent e) {
+          model.switchFillToggle(); // Switch toggle when checked or uncheked
+       }
+    });
+    strokeSize.addChangeListener(new ChangeListener() {
+       public void stateChanged(ChangeEvent e) {
+          Double db = new Double((double)strokeSize.getValue());
+          model.setStrokeSize((float)db.floatValue());
+       }
+    });
   }
 
   /**
