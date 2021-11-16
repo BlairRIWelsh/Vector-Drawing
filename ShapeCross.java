@@ -5,17 +5,35 @@ import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 
+/**
+ * Class representing a diagonal cross.
+ */
 class ShapeCross extends Shape {
 
-  private static int CROSS_THICKNESS_SCALER = 5; // width of the cross
+  private static int CROSS_THICKNESS_SCALER = 5; // width of the diagonals of the cross
 
+  /**
+   * Constructor for ShapeCross.
+   * @param startX      starting X coord
+   * @param startY      starting Y coord
+   * @param finishX     finishing X coord
+   * @param finishY     finishing Y coord
+   * @param colour      colour
+   * @param fillToggle  if fill is toggled or not
+   * @param strokeSize  size of stroke
+   */
   public ShapeCross(int startX, int startY, int finishX, int finishY, Color colour, boolean fillToggle, float strokeSize) {
     super(startX, startY, finishX, finishY, colour, fillToggle, strokeSize);
 
   }
 
+  /**
+   * Method to draw the shape.
+   * @param g  graphics
+   */
   public void draw(Graphics g) {
 
+    // Set colours and stroke
     Graphics2D g2d = (Graphics2D) g;
     g2d.setPaint(colour);
     g2d.setStroke(new BasicStroke(strokeSize));
@@ -55,7 +73,7 @@ class ShapeCross extends Shape {
       q = height/CROSS_THICKNESS_SCALER;
     }
 
-    // A cross can be thought of as a polygon with 12 points...
+    // A cross can be thought of as a polygon with 12 points so find each points X and Y coords
     int tlCoordOneX = x1 + q;
     int tlCoordOneY = y1;
     int tlCoordTwoX = x1;
@@ -88,6 +106,7 @@ class ShapeCross extends Shape {
     int innerWCoordX = x1 + (width/2 - q);
     int innerWCoordY = y1 + (height/2);
 
+    // Create polygon shape using all 12 coords
     Polygon polygon = new Polygon(
       new int[] {
         tlCoordOneX, tlCoordTwoX, innerWCoordX, blCoordOneX, blCoordTwoX, innerSCoordX, brCoordTwoX, brCoordOneX, innerECoordX, trCoordTwoX, trCoordOneX, innerNCoordX},
@@ -96,7 +115,8 @@ class ShapeCross extends Shape {
       , 12
     );
 
-    if (fillToggle == true) { //change to fill
+    // Draw shape with or without fill depending on fillToggle
+    if (fillToggle == true) {
       g2d.fill(polygon);
     } else {
       g2d.draw(polygon);
