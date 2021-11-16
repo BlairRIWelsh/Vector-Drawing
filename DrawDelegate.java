@@ -44,8 +44,8 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
   private JToolBar jtb;
   private JComboBox shapeComboBox;
   private JCheckBox fillBoolean;
-  private JLabel selectShapeLabel, colourLabel, shapeLabel, fillLabel;
-  private JButton colourButton, clearButton, undoButton, redoButton, moveButton,
+  private JLabel colourLabel, shapeLabel, fillLabel;
+  private JButton colourButton, clearButton, undoButton, redoButton,
   lineButton, rectangleButton, parallelogramButton, triangleButton, crossButton,
   ellipseButton, murrayPolygonButton;
 
@@ -102,7 +102,7 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
       clearButton.addActionListener(al);
       undoButton.addActionListener(al);
       redoButton.addActionListener(al);
-      moveButton.addActionListener(al);
+      // moveButton.addActionListener(al);
       colourButton.addActionListener(al);
       shapeComboBox.addActionListener(al);
 
@@ -187,8 +187,6 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
       model.undoShapeList();
     } else if (e.getSource() == redoButton) {
       model.redoShapeList();
-    } else if (e.getSource() == moveButton) {
-
     } else if (e.getSource() == colourButton) {
       pickColour();
     } else if (e.getSource() == shapeComboBox) {
@@ -241,9 +239,9 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
           colorLabel.setForeground(colour); // Change output label to reflect new colour
           colourButton.setBackground(colour); // Change colour button to reflect new colour
           model.setColour(colour); // Set model queue
-
-          selectShapeLabel.setForeground(colour);
-          selectShapeLabel.setBorder(BorderFactory.createLineBorder(colour));
+          //
+          // selectShapeLabel.setForeground(colour);
+          // selectShapeLabel.setBorder(BorderFactory.createLineBorder(colour));
 
        }
     });
@@ -261,7 +259,7 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
    * @param shape  Name of new shape
    */
   private void changeShape(String shape) {
-    selectShapeLabel.setText(shape);
+    // selectShapeLabel.setText(shape);
     model.setShape(shape);
 
   }
@@ -273,20 +271,20 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
 
     jtb.setFloatable(false);
 
-    selectShapeLabel = new JLabel("Line",SwingConstants.CENTER);
-    selectShapeLabel.setBorder(BorderFactory.createLineBorder(Color.black));
-    selectShapeLabel.setPreferredSize(new Dimension(250, 10));
-    jtb.add(selectShapeLabel);
+    // selectShapeLabel = new JLabel("Line",SwingConstants.CENTER);
+    // selectShapeLabel.setBorder(BorderFactory.createLineBorder(Color.black));
+    // selectShapeLabel.setPreferredSize(new Dimension(250, 10));
+    // jtb.add(selectShapeLabel);
 
     // Clear, Undo, Redo and Move buttons
     clearButton = new JButton("Clear");
     undoButton = new JButton("Undo");
     redoButton = new JButton("Redo");
-    moveButton = new JButton("Move");
+    // moveButton = new JButton("Move");
     jtb.add(clearButton);
     jtb.add(undoButton);
     jtb.add(redoButton);
-    jtb.add(moveButton);
+    // jtb.add(moveButton);
 
     // Colour label and button
     colourLabel = new JLabel(" Colour: ");
