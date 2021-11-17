@@ -4,7 +4,7 @@ import java.awt.Graphics;
 /**
  * Abstract class representing a shape to be drawn.
  */
-public abstract class Shape {
+public abstract class Shape implements java.io.Serializable {
 
   protected Color colour;
   protected boolean fillToggle;

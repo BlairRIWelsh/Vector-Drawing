@@ -6,7 +6,7 @@ import java.awt.Graphics2D;
 /**
  * Class representing a line.
  */
-class ShapeLine extends Shape {
+class ShapeLine extends Shape implements java.io.Serializable {
 
   /**
    * Constructor for shapeLine.

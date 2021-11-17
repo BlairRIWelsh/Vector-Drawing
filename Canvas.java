@@ -8,7 +8,7 @@ import javax.swing.JPanel;
 /**
  * Class to represent a canvas the user can draw on.
  */
-public class Canvas extends JPanel {
+public class Canvas extends JPanel implements java.io.Serializable {
 
 	ArrayList<Shape> shapeList = new ArrayList<Shape>(); // List of shapes on canvas.
 	private Graphics2D g2;
@@ -18,6 +18,7 @@ public class Canvas extends JPanel {
 	 */
 	public Canvas(){
 		setBackground(Color.white);
+
 	}
 
 	/**
@@ -46,6 +47,10 @@ public class Canvas extends JPanel {
 				shape.draw(g);
 			} else if (shape instanceof ShapeOctagon) {
 				shape.draw(g);
+			} else if (shape instanceof ShapeSquare) {
+				shape.draw(g);
+			} else if (shape instanceof ShapeCircle) {
+				shape.draw(g);
 			}
 
 		}
@@ -59,6 +64,7 @@ public class Canvas extends JPanel {
 	 */
 	public ArrayList<Shape> getShapeList() {
 		return shapeList;
+
 	}
 
 	/**
@@ -67,5 +73,12 @@ public class Canvas extends JPanel {
 	 */
 	public void setShapeList(ArrayList<Shape> shapeList) {
 		this.shapeList = shapeList;
+
 	}
+
+	public void printShapeList() {
+	 System.out.println(shapeList.toString());
+
+	}
+
 }

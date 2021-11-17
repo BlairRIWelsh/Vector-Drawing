@@ -6,12 +6,12 @@ import java.awt.Polygon;
 import java.lang.Math.*;
 
 /**
- * Class representing a triangle.
+ * Class representing a Octagon.
  */
-class ShapeTriangle extends Shape implements java.io.Serializable {
+class ShapeOctagon extends Shape implements java.io.Serializable {
 
   /**
-   * Constructor for ShapeTriangle.
+   * Constructor for ShapeOctagon.
    * @param startX      starting X coord
    * @param startY      starting Y coord
    * @param finishX     finishing X coord
@@ -20,7 +20,7 @@ class ShapeTriangle extends Shape implements java.io.Serializable {
    * @param fillToggle  if fill is toggled or not
    * @param strokeSize  size of stroke
    */
-  public ShapeTriangle(int startX, int startY, int finishX, int finishY, Color colour, boolean fillToggle, float strokeSize) {
+  public ShapeOctagon(int startX, int startY, int finishX, int finishY, Color colour, boolean fillToggle, float strokeSize) {
     super(startX, startY, finishX, finishY, colour, fillToggle, strokeSize);
 
   }
@@ -36,10 +36,11 @@ class ShapeTriangle extends Shape implements java.io.Serializable {
     g2d.setPaint(colour);
     g2d.setStroke(new BasicStroke(strokeSize));
 
-    int width = finishX - startX; // find width
+    int width = (finishX - startX); // find width
+    int height = (finishY - startY); // find height
 
-    // Create polygon shape using 3 points
-    Polygon polygon = new Polygon(new int[] {startX, startX+(width/2), finishX}, new int[] {finishY, startY, finishY}, 3);
+    // Create polygon shape using 8 points
+    Polygon polygon = new Polygon(new int[] {startX + (7*width/24), startX, startX, startX + (7*width/24), startX+(17*width/24), finishX, finishX, startX+(17*width/24)}, new int[] {startY, startY + (7*height/24), startY + (17*(height/24)), finishY, finishY, startY + (17*(height/24)), startY + (7*height/24), startY}, 8);
 
     // Draw shape with or without fill depending on fillToggle
     if (fillToggle == false) { //change to fill

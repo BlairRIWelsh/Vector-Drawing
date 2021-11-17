@@ -9,7 +9,7 @@ import java.awt.Polygon;
 /**
  * Class representing a Ellipse.
  */
-class ShapeEllipse extends Shape {
+class ShapeEllipse extends Shape implements java.io.Serializable {
 
   /**
    * Constructor for Ellipse.

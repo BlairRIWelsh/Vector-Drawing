@@ -15,15 +15,18 @@ import java.awt.event.ItemListener;
 import java.awt.Graphics;
 import java.lang.Double;
 import java.util.ArrayList;
-
+import java.io.File;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.awt.Graphics2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.JColorChooser;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * Delegate component of Model-Delegate Paradigm.
@@ -37,11 +40,6 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
   private static int DEFAULT__COLOUR_FRAME_WIDTH = 500; // Width of colour picker frame
   private static int DEFAULT_COLOUR_FRAME_HEIGHT = 450; // Height of colour picker frame
 
-  private String strokeBreak = "                          ";
-  private String colourBreak = "  ";
-  private String fillBreak = "  ";
-  private String shapeBreak = "              ";
-
   // Swing components
   private JFrame mainFrame;
   private JMenuBar jmb;
@@ -52,10 +50,13 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
   private JLabel colourLabel, shapeLabel, fillLabel, strokeLabel;
   private JSpinner strokeSize;
   private JButton colourButton, clearButton, undoButton, redoButton;
+  private JMenu file;
+  private JMenuItem save, load, export;
+  private JPanel clearAndUndoPanel, drawingOptionsPanel, shapeSelectorPanel, strokePanel, colourPanel, fillPanel, shapePanel;
   private JButton lineButton, rectangleButton, parallelogramButton, triangleButton, crossButton,
   ellipseButton, murrayPolygonButton;
 
-  Color selectedColour; // Selected colour
+  Color selectedColour; // Currently selected colour
 
   // Coordinates of mouse presses
   private int startX = -1;
@@ -92,24 +93,145 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
         canvas = new Canvas();
         mainFrame.getContentPane().add(canvas, BorderLayout.CENTER);
 
-        // Add the Delegate as a listener
+        // Add listeners
         addActionListenerForCanvas(this);
-        addActionListenerForToolbar(this);
+        addActionListenerForButtons(this);
+        addActionListenerForDrawingOptions();
+        addActionListenerForMenuBar();
         model.addListener(this);
 
     }
 
   /**
+   * Re-draws canvas. Called by model whenever a value updates.
+   * @param event  Event
+   */
+  public void propertyChange(PropertyChangeEvent event) {
+    canvas.setShapeList((ArrayList<Shape>) event.getNewValue());
+    canvas.repaint();
+
+  }
+
+  /**
+   * Instantiates and adds all toolbar buttons to the toolbar.
+   */
+  private void addToolbar() {
+
+    jtb.setFloatable(false);
+
+    // Clear, Undo, and Redo buttons
+    clearAndUndoPanel = new JPanel();
+    clearButton = new JButton("Clear");
+    undoButton = new JButton("Undo");
+    redoButton = new JButton("Redo");
+    clearAndUndoPanel.add(clearButton);
+    clearAndUndoPanel.add(undoButton);
+    clearAndUndoPanel.add(redoButton);
+    jtb.add(clearAndUndoPanel);
+
+    drawingOptionsPanel = new JPanel();
+
+    // Stroke selector
+    strokePanel = new JPanel();
+    shapeLabel = new JLabel("Stroke:");
+    strokePanel.add(shapeLabel);
+    SpinnerModel model = new SpinnerNumberModel(3, 0.5, 100, 0.5); // Initial value, min, max, step
+    strokeSize = new JSpinner(model);
+    strokePanel.add(strokeSize);
+    drawingOptionsPanel.add(strokePanel);
+
+    // Colour label and button
+    colourPanel = new JPanel();
+    colourLabel = new JLabel("Colour:");
+    colourButton = new JButton("    ");
+    colourButton.setBackground(Color.BLACK);
+    colourButton.setForeground(Color.BLACK);
+    colourButton.setBorder(new LineBorder(Color.BLACK));
+    colourButton.setOpaque(true);
+    colourPanel.add(colourLabel);
+    colourPanel.add(colourButton);
+    drawingOptionsPanel.add(colourPanel);
+
+    // Fill label and toggle button
+    fillPanel = new JPanel();
+    fillLabel = new JLabel("Fill:");
+    fillPanel.add(fillLabel);
+    fillBoolean = new JCheckBox();
+    fillPanel.add(fillBoolean);
+    drawingOptionsPanel.add(fillPanel);
+
+    jtb.add(drawingOptionsPanel);
+
+    // Choose shape combo box
+    shapeSelectorPanel = new JPanel();
+    shapeLabel = new JLabel("Shape:");
+    shapeComboBox = new JComboBox();
+    shapeComboBox.addItem("Line");
+    shapeComboBox.addItem("Circle");
+    shapeComboBox.addItem("Ellipse");
+    shapeComboBox.addItem("Triangle");
+    shapeComboBox.addItem("Square");
+    shapeComboBox.addItem("Rectangle");
+    shapeComboBox.addItem("Parallelogram");
+    shapeComboBox.addItem("Pentagon");
+    shapeComboBox.addItem("Hexagon");
+    shapeComboBox.addItem("Octagon");
+    shapeComboBox.addItem("Cross");
+    shapeSelectorPanel.add(shapeLabel);
+    shapeSelectorPanel.add(shapeComboBox);
+    jtb.add(shapeSelectorPanel);
+
+    lineButton = new JButton("Line");
+    rectangleButton = new JButton("Rectangle");
+    ellipseButton = new JButton("Ellipse");
+    crossButton = new JButton("Cross");
+    triangleButton = new JButton("Triangle");
+    parallelogramButton = new JButton("Parallelogram");
+    murrayPolygonButton = new JButton("Murray Polygon");
+    lineButton.setVisible(false);
+    rectangleButton.setVisible(false);
+    ellipseButton.setVisible(false);
+    crossButton.setVisible(false);
+    triangleButton.setVisible(false);
+    parallelogramButton.setVisible(false);
+    murrayPolygonButton.setVisible(false);
+    jtb.add(lineButton);
+    jtb.add(rectangleButton);
+    jtb.add(ellipseButton);
+    jtb.add(crossButton);
+    jtb.add(triangleButton);
+    jtb.add(parallelogramButton);
+    jtb.add(murrayPolygonButton);
+
+  }
+
+  /**
+   * Instantiates and adds the menu bar.
+   */
+  private void addMenuBar() {
+
+    file = new JMenu("File");
+    save = new JMenuItem("Save");
+    load = new JMenuItem("Load");
+    export = new JMenuItem("Export");
+
+    file.add(save);
+    file.add(load);
+    file.add(export);
+    jmb.add(file);
+
+  }
+
+  /**
    * Adds the action listner to all buttons in the toolbar.
    * @param al  Action listner
    */
-  public void addActionListenerForToolbar(ActionListener al) {
+  public void addActionListenerForButtons(ActionListener al) {
 
       clearButton.addActionListener(al);
       undoButton.addActionListener(al);
       redoButton.addActionListener(al);
       colourButton.addActionListener(al);
-      // strokeSize.addActionListener(al);
       shapeComboBox.addActionListener(al);
 
       lineButton.addActionListener(al);
@@ -132,9 +254,10 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
     canvas.addMouseListener(new MouseAdapter() {
       public void mouseReleased(MouseEvent e) {
 
-        model.undoShapeList();
-
         if (startX != -1 && startY != -1) {
+
+          model.undoShapeList();
+
           finishX = e.getX();
           finishY = e.getY();
 
@@ -146,7 +269,6 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
           startX = -1;
           startY = -1;
         }
-
       }
     });
 
@@ -167,20 +289,107 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
         // // Draw shape dynamically as it is dragged
         model.drawShape(startX, startY, finishX, finishY);
         canvas.repaint();
-
-
       }
     });
 
   }
 
   /**
-   * Re-draws canvas. Called by model whenever a value updates.
-   * @param event  Event
+   * Adds the action listner for the fill tick box and stroke size.
    */
-  public void propertyChange(PropertyChangeEvent event) {
-    canvas.setShapeList((ArrayList<Shape>) event.getNewValue());
-    canvas.repaint();
+  private void addActionListenerForDrawingOptions() {
+
+    fillBoolean.addItemListener(new ItemListener() {
+       public void itemStateChanged(ItemEvent e) {
+          model.switchFillToggle(); // Switch toggle when checked or uncheked
+       }
+    });
+
+    strokeSize.addChangeListener(new ChangeListener() {
+       public void stateChanged(ChangeEvent e) {
+          Double db = new Double((double)strokeSize.getValue());
+          model.setStrokeSize((float)db.floatValue()); // Change stroke size
+       }
+    });
+
+  }
+
+  /**
+   * Adds action listener for the menu bar.
+   */
+  private void addActionListenerForMenuBar() {
+
+    // For loading files
+    load.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+
+        // Open file chooser
+        JFileChooser fc = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(".txt", "txt");
+        fc.setFileFilter(filter);
+        int returnVal = fc.showOpenDialog(fc);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+
+          // Select file and load the new shape list
+          File file = fc.getSelectedFile();
+          model.loadShapeList(file);
+          JOptionPane.showMessageDialog(null, "File loaded: " + file.getName());
+        }
+      }
+    });
+
+    // Save the current file
+    save.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+
+        // Open file chooser
+        JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(".txt", "txt");
+        fileChooser.setFileFilter(filter);
+        int option = fileChooser.showSaveDialog(null);
+
+        if(option == JFileChooser.APPROVE_OPTION){
+
+            // Select file and save the shape list
+            File file = fileChooser.getSelectedFile();
+            model.saveShapeList(file);
+            JOptionPane.showMessageDialog(null, "Image saved as " + file.getName() + ".txt");
+         }
+      }
+    });
+
+    // Export the current file as a .png image
+    export.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+
+        // Load as image
+        BufferedImage image = new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = image.createGraphics();
+        canvas.paint(g);
+        g.dispose();
+
+        // Open file chooser
+        JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG Image", "png");
+        fileChooser.addChoosableFileFilter(filter);
+        fileChooser.setFileFilter(filter);
+        int option = fileChooser.showSaveDialog(canvas);
+
+        if(option == JFileChooser.APPROVE_OPTION){
+           try {
+
+             // Export image as .png
+             ImageIO.write(image, "png", fileChooser.getSelectedFile());
+             JOptionPane.showMessageDialog(null, "Image exported as " + fileChooser.getSelectedFile().getName() + ".png");
+
+           } catch (Exception ex) {
+             System.out.println("Export failed");
+             ex.printStackTrace();
+           }
+        }
+      }
+    });
 
   }
 
@@ -198,26 +407,10 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
     } else if (e.getSource() == colourButton) {
       pickColour();
     } else if (e.getSource() == shapeComboBox) {
-      shapeComboBox.removeItem("Please select...");
-      changeShape((String)shapeComboBox.getSelectedItem());
+      model.setShape((String)shapeComboBox.getSelectedItem());
     } else if (e.getSource() == strokeSize) {
       model.setStrokeSize((float)strokeSize.getValue());
     }
-    // else if (e.getSource() == lineButton) {
-    //   changeShape("Line");
-    // } else if (e.getSource() == rectangleButton) {
-    //   changeShape("Rectangle");
-    // } else if (e.getSource() == parallelogramButton) {
-    //   changeShape("Parallelogram");
-    // } else if (e.getSource() == triangleButton) {
-    //   changeShape("Triangle");
-    // } else if (e.getSource() == crossButton) {
-    //   changeShape("Cross");
-    // } else if (e.getSource() == ellipseButton) {
-    //   changeShape("Ellipse");
-    // } else if (e.getSource() == murrayPolygonButton) {
-    //   changeShape("Murray Polygon");
-    // }
 
   }
 
@@ -250,7 +443,6 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
           colorLabel.setForeground(colour); // Change output label to reflect new colour
           colourButton.setBackground(colour); // Change colour button to reflect new colour
           model.setColour(colour); // Set model queue
-
        }
     });
 
@@ -261,138 +453,4 @@ public class DrawDelegate implements PropertyChangeListener, ActionListener {
 
   }
 
-  /**
-   * Called when a shape button is pressed to change the shape drawn and the
-   * output label.
-   * @param shape  Name of new shape
-   */
-  private void changeShape(String shape) {
-    model.setShape(shape);
-  }
-
-  /**
-   * Instantiates and adds all toolbar buttons to the toolbar.
-   */
-  private void addToolbar() {
-
-    jtb.setFloatable(false);
-
-    // Clear, Undo, and Redo buttons
-    clearButton = new JButton("Clear");
-    undoButton = new JButton("Undo");
-    redoButton = new JButton("Redo");
-    jtb.add(clearButton);
-    jtb.add(undoButton);
-    jtb.add(redoButton);
-
-    shapeLabel = new JLabel(strokeBreak + " Stroke: ");
-    jtb.add(shapeLabel);
-    SpinnerModel model = new SpinnerNumberModel(3, 0.5, 100, 0.5); // Initial value, min, max, step
-    strokeSize = new JSpinner(model);
-    jtb.add(strokeSize);
-
-    // Colour label and button
-    colourLabel = new JLabel(colourBreak + "Colour: ");
-    colourButton = new JButton("    ");
-    colourButton.setBackground(Color.BLACK);
-    colourButton.setForeground(Color.BLACK);
-    colourButton.setBorder(new LineBorder(Color.BLACK));
-    colourButton.setOpaque(true);
-    jtb.add(colourLabel);
-    jtb.add(colourButton);
-
-    // Fill label and toggle button
-    fillLabel = new JLabel(fillBreak + "Fill:");
-    jtb.add(fillLabel);
-    fillBoolean = new JCheckBox();
-    // fillBoolean.addItemListener(new ItemListener() {
-    //    public void itemStateChanged(ItemEvent e) {
-    //       model.switchFillToggle(); // Switch toggle when checked or uncheked
-    //    }
-    // });
-    jtb.add(fillBoolean);
-
-    addActionListenerForSpinner();
-
-    // Choose shape combo box
-    shapeLabel = new JLabel(shapeBreak + "Shape:");
-    shapeComboBox = new JComboBox();
-    shapeComboBox.addItem("Please select...");
-    shapeComboBox.addItem("Line");
-    shapeComboBox.addItem("Ellipse");
-    shapeComboBox.addItem("Triangle");
-    shapeComboBox.addItem("Rectangle");
-    shapeComboBox.addItem("Parallelogram");
-    shapeComboBox.addItem("Pentagon");
-    shapeComboBox.addItem("Hexagon");
-    shapeComboBox.addItem("Octagon");
-    shapeComboBox.addItem("Cross");
-    shapeComboBox.addItem("Murray Polygon");
-    jtb.add(shapeLabel);
-    jtb.add(shapeComboBox);
-
-    lineButton = new JButton("Line");
-    rectangleButton = new JButton("Rectangle");
-    ellipseButton = new JButton("Ellipse");
-    crossButton = new JButton("Cross");
-    triangleButton = new JButton("Triangle");
-    parallelogramButton = new JButton("Parallelogram");
-    murrayPolygonButton = new JButton("Murray Polygon");
-    lineButton.setVisible(false);
-    rectangleButton.setVisible(false);
-    ellipseButton.setVisible(false);
-    crossButton.setVisible(false);
-    triangleButton.setVisible(false);
-    parallelogramButton.setVisible(false);
-    murrayPolygonButton.setVisible(false);
-    jtb.add(lineButton);
-    jtb.add(rectangleButton);
-    jtb.add(ellipseButton);
-    jtb.add(crossButton);
-    jtb.add(triangleButton);
-    jtb.add(parallelogramButton);
-    jtb.add(murrayPolygonButton);
-
-  }
-
-  private void addActionListenerForSpinner() {
-    fillBoolean.addItemListener(new ItemListener() {
-       public void itemStateChanged(ItemEvent e) {
-          model.switchFillToggle(); // Switch toggle when checked or uncheked
-       }
-    });
-    strokeSize.addChangeListener(new ChangeListener() {
-       public void stateChanged(ChangeEvent e) {
-          Double db = new Double((double)strokeSize.getValue());
-          model.setStrokeSize((float)db.floatValue());
-       }
-    });
-  }
-
-  /**
-   * Instantiates and adds the menu bar.
-   */
-  private void addMenuBar() {
-
-    JMenu file = new JMenu("File");
-    JMenuItem save = new JMenuItem("Save");
-    JMenuItem load = new JMenuItem("Load");
-
-    file.add(save);
-    file.add(load);
-    jmb.add(file);
-
-    load.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        JOptionPane.showMessageDialog(null, "Load not implemented :(");
-      }
-    });
-
-    save.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        JOptionPane.showMessageDialog(null, "Save not implemented :(");
-      }
-    });
-
-  }
 }

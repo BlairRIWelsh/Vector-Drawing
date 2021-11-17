@@ -8,7 +8,7 @@ import java.awt.Polygon;
 /**
  * Class representing a diagonal cross.
  */
-class ShapeCross extends Shape {
+class ShapeCross extends Shape implements java.io.Serializable {
 
   private static int CROSS_THICKNESS_SCALER = 5; // width of the diagonals of the cross
 

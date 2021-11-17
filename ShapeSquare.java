@@ -6,12 +6,12 @@ import java.awt.BasicStroke;
 import java.lang.Math.*;
 
 /**
- * Class representing a rectangle.
+ * Class representing a square.
  */
-class ShapeRectangle extends Shape implements java.io.Serializable {
+class ShapeSquare extends Shape implements java.io.Serializable {
 
   /**
-   * Constructor for ShapeRectangle.
+   * Constructor for ShapeSquare.
    * @param startX      starting X coord
    * @param startY      starting Y coord
    * @param finishX     finishing X coord
@@ -20,7 +20,7 @@ class ShapeRectangle extends Shape implements java.io.Serializable {
    * @param fillToggle  if fill is toggled or not
    * @param strokeSize  size of stroke
    */
-  public ShapeRectangle(int startX, int startY, int finishX, int finishY, Color colour, boolean fillToggle, float strokeSize) {
+  public ShapeSquare(int startX, int startY, int finishX, int finishY, Color colour, boolean fillToggle, float strokeSize) {
     super(startX, startY, finishX, finishY, colour, fillToggle, strokeSize);
 
   }
@@ -42,16 +42,11 @@ class ShapeRectangle extends Shape implements java.io.Serializable {
     int X = startX;
     int Y = startY;
 
-    // In case width or height is negative find the actual top left coord and
-    // make height and width posotive.
-    // This allows the cross to be drawn by dragging the mouse in any direction.
-    if (width < 0) {
-      X = finishX;
-      width = width * -1;
-    }
-    if (height < 0) {
-      Y = finishY;
-      height = height * -1;
+    // Make height and width equal
+    if (height < width) {
+      width = height;
+    } else {
+      height = width;
     }
 
     // Create rectangle shape

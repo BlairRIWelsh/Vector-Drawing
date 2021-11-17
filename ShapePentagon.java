@@ -6,12 +6,12 @@ import java.awt.Polygon;
 import java.lang.Math.*;
 
 /**
- * Class representing a triangle.
+ * Class representing a pentagon.
  */
-class ShapeTriangle extends Shape implements java.io.Serializable {
+class ShapePentagon extends Shape implements java.io.Serializable {
 
   /**
-   * Constructor for ShapeTriangle.
+   * Constructor for ShapePentagon.
    * @param startX      starting X coord
    * @param startY      starting Y coord
    * @param finishX     finishing X coord
@@ -20,7 +20,7 @@ class ShapeTriangle extends Shape implements java.io.Serializable {
    * @param fillToggle  if fill is toggled or not
    * @param strokeSize  size of stroke
    */
-  public ShapeTriangle(int startX, int startY, int finishX, int finishY, Color colour, boolean fillToggle, float strokeSize) {
+  public ShapePentagon(int startX, int startY, int finishX, int finishY, Color colour, boolean fillToggle, float strokeSize) {
     super(startX, startY, finishX, finishY, colour, fillToggle, strokeSize);
 
   }
@@ -36,10 +36,11 @@ class ShapeTriangle extends Shape implements java.io.Serializable {
     g2d.setPaint(colour);
     g2d.setStroke(new BasicStroke(strokeSize));
 
-    int width = finishX - startX; // find width
+    int width = (finishX - startX); // find width
+    int height = (finishY - startY); // find height
 
-    // Create polygon shape using 3 points
-    Polygon polygon = new Polygon(new int[] {startX, startX+(width/2), finishX}, new int[] {finishY, startY, finishY}, 3);
+    // Create polygon shape using 5 points
+    Polygon polygon = new Polygon(new int[] {startX+(width/2), startX, startX+(width/4), startX+(3*(width/4)), finishX}, new int[] {startY, startY+(height/3), finishY, finishY, startY+(height/3)}, 5);
 
     // Draw shape with or without fill depending on fillToggle
     if (fillToggle == false) { //change to fill

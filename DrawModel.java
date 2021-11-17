@@ -2,6 +2,11 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.io.File;
 
 /**
  * Model component of Model-Delegate Paradigm.
@@ -9,6 +14,7 @@ import java.util.ArrayList;
 public class DrawModel {
 
   private PropertyChangeSupport notifier;  // tracks and notifies listeners
+
   private String shape = "Line"; // Currently selected shape to draw
   private Color colour = Color.BLACK; // Currently selected colour
   private float strokeSize = 3;  // Stroke size of line
@@ -65,12 +71,19 @@ public class DrawModel {
 
   }
 
+  /**
+   * Switches the fill to on or off.
+   */
   public void switchFillToggle() {
     fillToggle = !fillToggle;
     System.out.println("Fill toggled is " + fillToggle);
 
   }
 
+  /**
+   * Sets the current stroke size.
+   * @param strokeSize  New stroke size.
+   */
   public void setStrokeSize(float strokeSize) {
     System.out.println("Stroke size set to " + strokeSize);
     this.strokeSize = strokeSize;
@@ -101,17 +114,18 @@ public class DrawModel {
         tempShapeList.add(new ShapeCross(startX, startY, finishX, finishY, colour, fillToggle, strokeSize));
     } else if (shape.equals("Ellipse")) {
       tempShapeList.add(new ShapeEllipse(startX, startY, finishX, finishY, colour, fillToggle, strokeSize));
-    } else if (shape.equals("Murray Polygon")) {
-
     } else if (shape.equals("Pentagon")) {
       tempShapeList.add(new ShapePentagon(startX, startY, finishX, finishY, colour, fillToggle, strokeSize));
     } else if (shape.equals("Hexagon")) {
       tempShapeList.add(new ShapeHexagon(startX, startY, finishX, finishY, colour, fillToggle, strokeSize));
     } else if (shape.equals("Octagon")) {
       tempShapeList.add(new ShapeOctagon(startX, startY, finishX, finishY, colour, fillToggle, strokeSize));
+    } else if (shape.equals("Square")) {
+      tempShapeList.add(new ShapeSquare(startX, startY, finishX, finishY, colour, fillToggle, strokeSize));
+    } else if (shape.equals("Circle")) {
+      tempShapeList.add(new ShapeCircle(startX, startY, finishX, finishY, colour, fillToggle, strokeSize));
     }
 
-    // System.out.println("Drawn " + shape + " from " + startX + "," + startY + " to " + finishX + "," + finishY);
     update(tempShapeList); // Update shapelist
 
     // If a clear has been performed increment undosTillClear. This allows the
@@ -141,6 +155,9 @@ public class DrawModel {
 
   }
 
+  /**
+   * Prints the current shapeList.
+   */
   public void printShapeList() {
     System.out.println("Shape list: " + shapeList.toString());
   }
@@ -149,8 +166,6 @@ public class DrawModel {
    * Undos the last shape added to shapeList.
    */
   public void undoShapeList() {
-
-    // System.out.println("Before Shape list: " + shapeList.toString());
 
     if (undosTillClear == 0) {      // if we are undoing a clear operation
       shapeList.addAll(clearList);  // add all cleared shapes to the shapelist
@@ -172,9 +187,6 @@ public class DrawModel {
       if (undosTillClear > 0) { // If undos till clear isnt -1 decrement it.
         undosTillClear--;
       }
-
-      // System.out.println("Undo shape list");
-      // System.out.println("After Shape list: " + shapeList.toString());
     }
 
   }
@@ -195,9 +207,59 @@ public class DrawModel {
         undosTillClear++;
       }
 
-      System.out.println("Redo shape list");
     }
 
   }
+
+  /**
+     * Saves the current shape list to the given file.
+     * @param file  file to save to
+   */
+  public void saveShapeList(File file) {
+    try {
+
+      // Save shape list
+      FileOutputStream fos = new FileOutputStream(file + ".txt");
+      ObjectOutputStream oos = new ObjectOutputStream(fos);
+      oos.writeObject(shapeList);
+      oos.close();
+
+      System.out.println("Saved shape list:");
+      printShapeList();
+
+    } catch (Exception p){
+      System.out.println("Save failed");
+      p.printStackTrace();
+    }
+
+  }
+
+  /**
+   * Loads a shape list from the given file.
+   * @param file  file to load from
+   */
+  public void loadShapeList(File file) {
+      try {
+
+       FileInputStream fin = new FileInputStream(file);
+       ObjectInputStream ois = new ObjectInputStream(fin);
+
+       // Change all lists
+       update((ArrayList<Shape>)ois.readObject());
+       undosTillClear = -1;
+       undoList.clear();
+       clearList.clear();
+
+       ois.close();
+
+       System.out.println("Loaded shape list:");
+       printShapeList();
+
+      } catch(Exception q) {
+        System.out.println("Load failed");
+        q.printStackTrace();
+      }
+
+    }
 
 }

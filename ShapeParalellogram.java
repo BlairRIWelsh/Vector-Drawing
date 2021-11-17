@@ -7,7 +7,7 @@ import java.awt.Polygon;
 /**
  * Class representing a Parallelogram.
  */
-class ShapeParalellogram extends Shape {
+class ShapeParalellogram extends Shape implements java.io.Serializable {
 
   // How much the bottom left and top right points should shift by to make it
   private static int PARA_POINT_SHIFT = 25;

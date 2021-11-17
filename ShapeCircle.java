@@ -1,17 +1,18 @@
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Color;
+import java.awt.geom.Ellipse2D;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
-import java.lang.Math.*;
 
 /**
- * Class representing a triangle.
+ * Class representing a Ellipse.
  */
-class ShapeTriangle extends Shape implements java.io.Serializable {
+class ShapeCircle extends Shape implements java.io.Serializable {
 
   /**
-   * Constructor for ShapeTriangle.
+   * Constructor for Circle.
    * @param startX      starting X coord
    * @param startY      starting Y coord
    * @param finishX     finishing X coord
@@ -20,7 +21,7 @@ class ShapeTriangle extends Shape implements java.io.Serializable {
    * @param fillToggle  if fill is toggled or not
    * @param strokeSize  size of stroke
    */
-  public ShapeTriangle(int startX, int startY, int finishX, int finishY, Color colour, boolean fillToggle, float strokeSize) {
+  public ShapeCircle(int startX, int startY, int finishX, int finishY, Color colour, boolean fillToggle, float strokeSize) {
     super(startX, startY, finishX, finishY, colour, fillToggle, strokeSize);
 
   }
@@ -36,16 +37,27 @@ class ShapeTriangle extends Shape implements java.io.Serializable {
     g2d.setPaint(colour);
     g2d.setStroke(new BasicStroke(strokeSize));
 
-    int width = finishX - startX; // find width
+    // Get height, width and top left X and Y coord
+    int width = finishX - startX;
+    int height = finishY-startY;
+    int X = startX;
+    int Y = startY;
 
-    // Create polygon shape using 3 points
-    Polygon polygon = new Polygon(new int[] {startX, startX+(width/2), finishX}, new int[] {finishY, startY, finishY}, 3);
+    // Make height and width equal
+    if (height < width) {
+      width = height;
+    } else {
+      height = width;
+    }
+
+    // Create ellipse shape
+    Ellipse2D ellipse = new Ellipse2D.Double(X, Y, width, height);
 
     // Draw shape with or without fill depending on fillToggle
-    if (fillToggle == false) { //change to fill
-      g2d.draw(polygon);
+    if (fillToggle == true) { //change to fill
+      g2d.fill(ellipse);
     } else {
-      g2d.fill(polygon);
+      g2d.draw(ellipse);
     }
 
   }
