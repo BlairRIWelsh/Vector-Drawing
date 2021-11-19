@@ -262,4 +262,26 @@ public class DrawModel {
 
     }
 
+    // Getter methods
+
+    public String getShape() {
+      return shape;
+    }
+
+    public Color getColour() {
+      return colour;
+    }
+
+    public float getStrokeSize() {
+      return strokeSize;
+    }
+
+    public boolean getFillToggle() {
+      return fillToggle;
+    }
+
+    public ArrayList<Shape> getShapeList() {
+      return shapeList;
+    }
+
 }
